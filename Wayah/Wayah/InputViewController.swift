@@ -6,52 +6,39 @@
 //  Copyright (c) 2015 Allison Moyer. All rights reserved.
 //
 
+import CoreData
 import UIKit
 
-class InputViewController: UIViewController {
-    
-    //var items = Data().items;
-    
+class InputViewController: UIViewController, UITextFieldDelegate, NSFetchedResultsControllerDelegate {
 
+    @IBOutlet var scrollView: UIScrollView!
     @IBOutlet weak var textInput: UITextField!
     @IBOutlet weak var totalItems: UILabel!
     
-    @IBAction func addItem(sender: AnyObject) {
-        if !(textInput.text ?? "").isEmpty {
-            Game.data.add(BowlItem(text: textInput.text!))
-            totalItems.text = String(Game.data.bowl1.count)
-            textInput.text = ""
-            print (Game.data.bowl1, terminator: "")
-        }
+    @IBAction func addItemWithSender(sender: AnyObject) {
+        DataService.addEntryWithName(textInput.text)
+        textInput.text = nil
     }
     
     //MARK: - Helper Methods
     
-    // This is called to remove the first responder for the text field.
     func resign() {
         self.resignFirstResponder()
     }
-    
-    // This triggers the textFieldDidEndEditing method that has the textField within it.
-    //  This then triggers the resign() method to remove the keyboard.
-    //  We use this in the "done" button action.
+
     func endEditingNow(){
         self.view.endEditing(true)
     }
     
-    
     //MARK: - Delegate Methods
     
-    // When clicking on the field, use this method.
-    func textFieldShouldBeginEditing(textField: UITextField) -> Bool {
-        
-        
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         // Create a button bar for the number pad
         let keyboardDoneButtonView = UIToolbar()
         keyboardDoneButtonView.sizeToFit()
         
         // Setup the buttons to be put in the system.
-        let item = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.Plain, target: self, action: #selector(InputViewController.endEditingNow) )
+        let item = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.plain, target: self, action: #selector(InputViewController.endEditingNow))
         let toolbarButtons = [item]
         
         //Put the buttons into the ToolBar and display the tool bar
@@ -61,53 +48,79 @@ class InputViewController: UIViewController {
         return true
     }
     
-    // What to do when a user finishes editting
-    func textFieldDidEndEditing(textField: UITextField) {
-        
-        //nothing fancy here, just trigger the resign() method to close the keyboard.
+    private func textFieldDidEndEditing(textField: UITextField) {
         resign()
     }
     
-    
-    // Clicking away from the keyboard will remove the keyboard.
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
     }
     
-    // called when 'return' key pressed. return NO to ignore.
-    // Requires having the text fields using the view controller as the delegate.
-    func textFieldShouldReturn(textField: UITextField!) -> Bool {
-        
-        // Sends the keyboard away when pressing the "done" button
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         resign()
         return true
-        
     }
     
-    override func viewWillAppear(animated: Bool) {
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        totalItems.text = String(controller.fetchedObjects?.count ?? 0)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        totalItems.text = String(Game.data.bowl1.count)
+        totalItems.text = String(fetchedResultsController.fetchedObjects?.count ?? 0)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
-    }
+        textInput.delegate = self
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+        NotificationCenter.default.addObserver(self, selector: #selector(InputViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(InputViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        
+        do {
+            try self.fetchedResultsController.performFetch()
+        } catch {
+            let fetchError = error as NSError
+            print("Unable to Perform Fetch Request")
+            print("\(fetchError), \(fetchError.localizedDescription)")
+        }
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    func registerForKeyboardNotifications() {
+        //Adding notifies on keyboard appearing
+//        NotificationCenter.default.addObserver(self, selector: #selector(InputViewController.keyboardWasShown(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+//        NotificationCenter.default.addObserver(self, selector: #selector(InputViewController.keyboardWillBeHidden(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
     }
-    */
+    
+    
+    func deregisterFromKeyboardNotifications() {
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+    }
+    
+    func keyboardWillShow(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            if self.view.frame.origin.y == 0 {
+                self.view.frame.origin.y -= keyboardSize.height
+            }
+        }
+    }
+    
+    func keyboardWillHide(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            if self.view.frame.origin.y != 0{
+                self.view.frame.origin.y += keyboardSize.height
+            }
+        }
+    }
+
+    fileprivate lazy var fetchedResultsController: NSFetchedResultsController<Entry> = {
+        let fetchRequest: NSFetchRequest<Entry> = NSFetchRequest(entityName: "Entry")
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: DataService.context, sectionNameKeyPath: nil, cacheName: nil)        
+        fetchedResultsController.delegate = self
+        
+        return fetchedResultsController
+    }()
 
 }

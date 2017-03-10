@@ -14,16 +14,13 @@ class InfoViewController: UIViewController {
     @IBOutlet weak var infoLabel: UILabel!
     @IBOutlet weak var button: UIButton!
     
-    var roundTitle = ["Anything Goes", "One Word", "Charades"]
-    var roundDescription = ["In this round, you can say anything you need to (except the actual name) to get your team to guess the name.", "In this round, you can only say one word to get your team to guess the name.", "In this round, you can only act things out silently (charades) to get your team to guess the name."]
-    
-    override func viewWillAppear(animated: Bool) {
-        if (Game.data.round <= 3) {
-            titleLabel.text = "Round \(Game.data.round):\n\(roundTitle[Game.data.round-1])"
-            infoLabel.text = roundDescription[Game.data.round-1]
-            
+    fileprivate let gameStateMachine = GameStateMachine.sharedInstance
+
+    override func viewWillAppear(_ animated: Bool) {
+        if let currentRound = gameStateMachine.currentRound, !gameStateMachine.gameIsOver {
+            titleLabel.text = "Round \(currentRound.id):\n\(currentRound.title)"
+            infoLabel.text = currentRound.description
         }
-        
     }
     
     override func viewDidLoad() {

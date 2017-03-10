@@ -12,11 +12,12 @@ class EditNameViewCell: UITableViewCell {
     
     let label: UILabel
     let leftMarginForLabel: CGFloat = 15.0
+
     
-    var listItems:BowlItem? {
-        didSet {
-            label.text = listItems!.text
-        }
+    func configureWithEntry(_ entry: Entry) {
+        label.text = entry.name
+        selectionStyle = UITableViewCellSelectionStyle.none
+        isUserInteractionEnabled = true
     }
     
     required init(coder aDecoder: NSCoder) {
@@ -25,13 +26,13 @@ class EditNameViewCell: UITableViewCell {
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         label = UILabel()
-        label.textColor = UIColor.blackColor()
-        label.font = UIFont.systemFontOfSize(16)
+        label.textColor = UIColor.black
+        label.font = UIFont.systemFont(ofSize: 16)
 //
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 //        label.delegate = self
 //        label.contentVerticalAlignment = UIControlContentVerticalAlignment.Center
-        self.selectionStyle = .None
+        self.selectionStyle = .none
         addSubview(label)
         
     }
@@ -46,7 +47,7 @@ class EditNameViewCell: UITableViewCell {
         // Initialization code
     }
     
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
 //        super.setSelected(selected, animated: animated)
         
         // Configure the view for the selected state
@@ -64,7 +65,7 @@ class EditNameViewCell: UITableViewCell {
 //        return true
 //    }
     
-    func loadImage(image: UIImage) {
+    func loadImage(_ image: UIImage) {
         //barImageView.userInteractionEnabled = true
         
     }

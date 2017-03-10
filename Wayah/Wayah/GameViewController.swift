@@ -12,14 +12,12 @@ class GameViewController: UIViewController {
     
     var timerCount: Int = 60
     var timerRunning = false
-    var timer = NSTimer()
+    var timer = Timer()
     
     var scores: [Int] = []
-    //var teamScores = Scoreboard()
     
-    var currentTeam = 1
-    var itemIndex = abs(random()) % Game.data.bowl1.count
-    var numCorrect = 0
+    fileprivate let gameStateMachine = GameStateMachine.sharedInstance
+    fileprivate let roundStateMachine = RoundStateMachine()
     
     @IBOutlet weak var timerLabel: UILabel!
     @IBOutlet weak var playButton: UIButton!
@@ -31,163 +29,100 @@ class GameViewController: UIViewController {
     @IBOutlet weak var correctButton: UIButton!
     @IBOutlet weak var skipButton: UIButton!
     
-    @IBAction func selectCorrect(sender: UIButton) {
+    @IBAction func selectCorrect(_ sender: UIButton) {
+        roundStateMachine.entryGuessedCorrectly()
         
-        scores[currentTeam-1] += 1
-        Game.data.scores.increase(currentTeam-1)
-        updateScores()
-        
-        print("Correct selected")
-        if (Game.data.bowl1.count > 0) {
-            Game.data.move(itemIndex)
-        }
-        
-        // ROUND OVER
-        if (Game.data.bowl1.count == 0) {
-            Game.data.reset()
-            if (Game.data.round > 3) {
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let vc = storyboard.instantiateViewControllerWithIdentifier("Game Over") as! GameOverViewController
-                self.presentViewController(vc, animated: true, completion: nil)
-            } else {
-                self.dismissViewControllerAnimated(true, completion: {})
-            }
+        if gameStateMachine.gameIsOver {
+            let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "Game Over") as! GameOverViewController
+            self.present(vc, animated: true, completion: nil)
+            
+        } else if !roundStateMachine.roundIsOver {
+            update()
             
         } else {
-            itemIndex = abs(random()) % Game.data.bowl1.count
-            celebrityName.text = Game.data.bowl1[itemIndex].text
-            numCorrect += 1
-            correctLabel.text = "Correct: \(String(numCorrect))"
+            self.dismiss(animated: true, completion: {})
         }
     }
     
-    @IBAction func selectSkip(sender: UIButton) {
-        itemIndex = abs(random()) % Game.data.bowl1.count
-        celebrityName.text = Game.data.bowl1[itemIndex].text
+    @IBAction func selectSkip(_ sender: UIButton) {
+        roundStateMachine.entrySkipped()
+        update()
     }
     
     func decrement() {
-        
-        timerCount -= 1
-        timerLabel.text = String(timerCount)
-        
-        // TURN OVER
-        if (timerCount == 0) {
+        if timerCount > 0 {
+            timerCount -= 1
+            timerLabel.text = String(timerCount)
+        } else {
+            // TURN OVER
             timer.invalidate()
             timerRunning = false
-            timerCount = Game.data.settings.timeLimit
+            timerCount = gameStateMachine.settings.timeLimit
             
-            
-            numCorrect = 0
-            
+            roundStateMachine.endTurn()
             hide()
-            
-            currentTeam += 1
-            if (currentTeam > Game.data.settings.numTeams) {
-                currentTeam = 1
-            }
-            playButton.titleLabel?.text = "Team \(currentTeam) - Play!"
+
+            playButton.titleLabel?.text = "Team \(roundStateMachine.currentTeam.id) - Play!"
+            playButton.titleLabel?.sizeToFit()
         }
         
     }
     
     func hide() {
-        playButton.hidden = false
-        celebrityName.hidden = true
-        correctButton.hidden = true
-        correctLabel.hidden = true
-        skipButton.hidden = true
+        playButton.isHidden = false
+        celebrityName.isHidden = true
+        correctButton.isHidden = true
+        correctLabel.isHidden = true
+        skipButton.isHidden = true
     }
     
     func unhide() {
-        playButton.hidden = true
-        celebrityName.text = Game.data.bowl1[itemIndex].text
-        celebrityName.hidden = false
+        playButton.isHidden = true
+        celebrityName.text = roundStateMachine.currentEntry.name
+        celebrityName.isHidden = false
         
-        correctButton.hidden = false
-        correctLabel.hidden = false
-        correctLabel.text = "Correct: \(String(numCorrect))"
+        correctButton.isHidden = false
+        correctLabel.isHidden = false
+        correctLabel.text = "Correct: \(String(roundStateMachine.numCorrect))"
         
-        skipButton.hidden = !(Game.data.settings.allowSkipping!)
+        skipButton.isHidden = !gameStateMachine.settings.allowSkipping
     }
     
-    @IBAction func play(sender: UIButton) {
-        
+    @IBAction func play(_ sender: UIButton) {
         unhide()
         
         if (timerRunning == false) {
-            
-            timer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: #selector(GameViewController.decrement), userInfo: nil, repeats: true)
+            timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(GameViewController.decrement), userInfo: nil, repeats: true)
             
             timerRunning = true
-            
+        } else {
+            timer.invalidate()
+            timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(GameViewController.decrement), userInfo: nil, repeats: true)
         }
-        
-        
-
-        
-        
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         hide()
         
-        scoreboard.numberOfLines = Game.data.settings.numTeams + 1
+        scoreboard.numberOfLines = gameStateMachine.settings.numTeams + 1
         scoreboard.sizeToFit()
         
-        print("Score data: \(Game.data.scores.data.count)")
+        update()
         
-        if (Game.data.scores.data.count == 0) {
-            Game.data.scores.create(Game.data.settings.numTeams)
-            for _ in 1...Game.data.settings.numTeams {
-                scores.append(0)
-            }
-        } else {
-            for i in 1...Game.data.settings.numTeams {
-                scores.append(Game.data.scores.data[i-1])
-            }
-        }
-        
-        
-        
-        updateScores()
-        
-        timerCount = Game.data.settings.timeLimit!
+        timerCount = gameStateMachine.settings.timeLimit
         timerLabel.text = String(timerCount)
-        
     }
     
-    func updateScores() {
+    func update() {
         var text = "Scoreboard"
-        for i in 1...Game.data.settings.numTeams {
-            text += "\nTeam \(i): \(scores[i-1])"
+        for team in gameStateMachine.teams {
+            text += String(format: "\nTeam %d: %d", team.id, team.score)
         }
         
         scoreboard.text = text
         
+        celebrityName.text = roundStateMachine.currentEntry.name
+        correctLabel.text = "Correct: \(String(roundStateMachine.numCorrect))"
     }
     
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

@@ -6,128 +6,124 @@
 //  Copyright (c) 2015 Allison Moyer. All rights reserved.
 //
 
+import CoreData
 import UIKit
 
-class EditNameViewController: UITableViewController {
+class EditNameViewController: UITableViewController, NSFetchedResultsControllerDelegate {
     
-    @IBOutlet var editTable: UITableView!
-    
+    // MARK: - UIView
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // 1
-        tableView.registerClass(EditNameViewCell.self, forCellReuseIdentifier: "editNameCell")
+        do {
+            try self.fetchedResultsController.performFetch()
+        } catch {
+            let fetchError = error as NSError
+            print("Unable to Perform Fetch Request")
+            print("\(fetchError), \(fetchError.localizedDescription)")
+        }
         
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-        
+        tableView.register(EditNameViewCell.self, forCellReuseIdentifier: "editNameCell")
     }
     
-    override func viewWillAppear(animated: Bool){
+    // MARK: - NSFetchedResultsControllerDelegate
+    
+    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        tableView.beginUpdates()
+    }
 
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+        switch type {
+        case .insert:
+            guard let newIndexPath = newIndexPath else { return }
+            tableView.insertRows(at: [newIndexPath], with: .fade)
+            break
+        case .delete:
+            guard let indexPath = indexPath else { return }
+            tableView.deleteRows(at: [indexPath], with: .fade)
+            break
+        case .update:
+            guard let indexPath = indexPath, let cell = tableView.cellForRow(at: indexPath) as? EditNameViewCell else { return }
+            let entry = fetchedResultsController.object(at: indexPath)
+            cell.configureWithEntry(entry)
+            break
+        default:
+            break
+        }
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        tableView.endUpdates()
     }
     
-    // MARK: - Table view data source
+    // MARK: - UITableViewDataSource
     
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        // #warning Potentially incomplete method implementation.
-        // Return the number of sections.
+    override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete method implementation.
-        // Return the number of rows in the section.
-        return Game.data.bowl1.count
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        guard let entries = fetchedResultsController.fetchedObjects else { return 0 }
+        return entries.count
     }
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("editNameCell", forIndexPath: indexPath) as! EditNameViewCell
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "editNameCell", for: indexPath) as! EditNameViewCell
         
-        // Configure the cell...
-        let item = Game.data.bowl1[indexPath.row]
-        cell.listItems = item
-        cell.selectionStyle = UITableViewCellSelectionStyle.None
-        cell.userInteractionEnabled = true
+        let entry = fetchedResultsController.object(at: indexPath)
+        cell.configureWithEntry(entry)
         
         return cell
     }
-    
-    
-    
+        
     //        override func tableView(tableView: UITableView,
     //            estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
     //                return 75;
     //        }
     
-    
-    
-    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        //Return NO if you do not want the specified item to be editable.
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let _ = tableView.dequeueReusableCellWithIdentifier("editNameCell", forIndexPath: indexPath) as! EditNameViewCell
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let _ = tableView.dequeueReusableCell(withIdentifier: "editNameCell", for: indexPath) as! EditNameViewCell
 
-        let alert = UIAlertController(title: "Edit Name", message: nil, preferredStyle: UIAlertControllerStyle.Alert)
+        let entry = fetchedResultsController.object(at: indexPath)
+        let alert = UIAlertController(title: "Edit Name", message: nil, preferredStyle: UIAlertControllerStyle.alert)
 
-        alert.addTextFieldWithConfigurationHandler { (textField : UITextField) -> Void in
-            textField.text = Game.data.bowl1[indexPath.row].text
+        alert.addTextField { (textField : UITextField) -> Void in
+            textField.text = entry.name
         }
         
-        let deleteAction = UIAlertAction(title: "Delete", style: UIAlertActionStyle.Destructive) { (result : UIAlertAction) -> Void in
-            Game.data.bowl1.removeAtIndex(indexPath.row)
-            self.tableView.reloadData()
+        let deleteAction = UIAlertAction(title: "Delete", style: UIAlertActionStyle.destructive) { (result : UIAlertAction) -> Void in
+            DataService.delete(entry)
         }
-        let saveAction = UIAlertAction(title: "Save", style: UIAlertActionStyle.Default) { (result : UIAlertAction) -> Void in
-            Game.data.update((alert.textFields?.first?.text!)!, index: indexPath.row)
-            self.tableView.reloadData()
+        
+        let saveAction = UIAlertAction(title: "Save", style: UIAlertActionStyle.default) { (result : UIAlertAction) -> Void in
+            DataService.updateEntry(entry, name: alert.textFields?.first?.text)
         }
+        
         alert.addAction(deleteAction)
         alert.addAction(saveAction)
-        self.presentViewController(alert, animated: true, completion: nil)
+        self.present(alert, animated: true, completion: nil)
     }
     
     // Override to support editing the table view.
-    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if editingStyle == .Delete {
-            // Delete the row from the data source
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            let entry = fetchedResultsController.object(at: indexPath)
+            DataService.delete(entry)
             
-            Game.data.bowl1.removeAtIndex(indexPath.row)
-            
-            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-        } else if editingStyle == .Insert {
+        } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-            
-            //game.bowl1.append(<#newElement: T#>)
             
         }
     }
     
-    @IBAction func doneButtonPressed(sender: AnyObject) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+    @IBAction func doneButtonPressed(_ sender: AnyObject) {
+        self.dismiss(animated: true, completion: nil)
     }
-    
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(tableView: UITableView, moveRowAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
-    
-    }
-    */
-    
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-    // Return NO if you do not want the item to be re-orderable.
-    return true
-    }
-    */
     
     /*
     // MARK: - Navigation
@@ -138,6 +134,15 @@ class EditNameViewController: UITableViewController {
     // Pass the selected object to the new view controller.
     }
     */
+    
+    fileprivate lazy var fetchedResultsController: NSFetchedResultsController<Entry> = {
+        let fetchRequest: NSFetchRequest<Entry> = Entry.fetchRequest() as! NSFetchRequest<Entry>
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: DataService.context, sectionNameKeyPath: nil, cacheName: nil)
+        fetchedResultsController.delegate = self
+        
+        return fetchedResultsController
+    }()
     
 }
 

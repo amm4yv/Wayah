@@ -14,52 +14,23 @@ class GameOverViewController: UIViewController {
     @IBOutlet weak var infoLabel: UILabel!
     @IBOutlet weak var button: UIButton!
     
-    override func viewWillAppear(animated: Bool) {
-            var info = ""
-            var highest = 0
-            var winner = ""
-            for i in 1...Game.data.settings.numTeams {
-                let score = Game.data.scores.data[i-1]
-                info += "\nTeam \(i): \(score)"
-                if (score > highest) {
-                    highest = score
-                    winner = "Team \(i)"
-                }
-            }
-            
-            info += "\n\(winner) wins!"
-            
-            infoLabel.text = info
-            Game.data.newGame()
+    fileprivate let gameStateMachine = GameStateMachine.sharedInstance
+    
+    override func viewWillAppear(_ animated: Bool) {
+        var info = ""
+        for team in gameStateMachine.teams {
+            info += String(format: "\nTeam %d: %d", team.id, team.score)
         }
         
-        
-    
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        // Do any additional setup after loading the view.
+        if let winner = gameStateMachine.winner {
+            info += String(format: "\nTeam %d wins!", winner.id)
+        }
+            
+        infoLabel.text = info
+        gameStateMachine.newGame()
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    @IBAction func goHomeButtonPressed(_ sender: AnyObject) {
+        self.performSegue(withIdentifier: "unwindToHomeViewController", sender: self)
     }
-    
-    
-    @IBAction func goHomeButtonPressed(sender: AnyObject) {
-        self.dismissViewControllerAnimated(true, completion: nil)
-    }
-    
-    /*
-    // MARK: - Navigation
-    
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-    // Get the new view controller using segue.destinationViewController.
-    // Pass the selected object to the new view controller.
-    }
-    */
-    
 }

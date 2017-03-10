@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="11759" systemVersion="16D32" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Category" representedClassName=".Category" syncable="YES">
+        <attribute name="name" attributeType="String" syncable="YES"/>
+        <attribute name="userCreated" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
+        <relationship name="entries" toMany="YES" deletionRule="Cascade" destinationEntity="Entry" inverseName="category" inverseEntity="Entry" syncable="YES"/>
+        <relationship name="subCategories" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Subcategory" inverseName="category" inverseEntity="Subcategory" syncable="YES"/>
+    </entity>
+    <entity name="Entry" representedClassName=".Entry" syncable="YES">
+        <attribute name="id" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" indexed="YES" syncable="YES"/>
+        <attribute name="info" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" attributeType="String" syncable="YES"/>
+        <relationship name="category" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="Category" inverseName="entries" inverseEntity="Category" syncable="YES"/>
+        <relationship name="subcategory" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="Subcategory" inverseName="entires" inverseEntity="Subcategory" syncable="YES"/>
+    </entity>
+    <entity name="Subcategory" representedClassName=".Subcategory" syncable="YES">
+        <attribute name="name" attributeType="String" syncable="YES"/>
+        <relationship name="category" maxCount="1" deletionRule="No Action" destinationEntity="Category" inverseName="subCategories" inverseEntity="Category" syncable="YES"/>
+        <relationship name="entires" toMany="YES" deletionRule="Cascade" destinationEntity="Entry" inverseName="subcategory" inverseEntity="Entry" syncable="YES"/>
+    </entity>
+    <entity name="TeamTemp" representedClassName="TeamTemp" syncable="YES" codeGenerationType="class">
+        <attribute name="id" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" indexed="YES" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="score" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="Category" positionX="-225" positionY="-207" width="128" height="103"/>
+        <element name="Entry" positionX="144" positionY="-261" width="128" height="120"/>
+        <element name="Subcategory" positionX="-47" positionY="-106" width="128" height="88"/>
+        <element name="TeamTemp" positionX="-36" positionY="-153" width="128" height="90"/>
+    </elements>
+</model>

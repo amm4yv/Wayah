@@ -16,36 +16,36 @@ class SetupViewController: UIViewController {
     @IBOutlet weak var timeValue: UILabel!
     @IBOutlet weak var timeStepper: UIStepper!
 
-    var allowSkipping = true
+    fileprivate var allowSkipping = true
+    fileprivate let gameStateMachine = GameStateMachine.sharedInstance
     
-    
-    @IBAction func teamStepperValueChanged(sender: UIStepper) {
+    @IBAction func teamStepperValueChanged(_ sender: UIStepper) {
         teamValue.text = Int(sender.value).description
     }
     
-    @IBAction func timeStepperValueChanged(sender: UIStepper) {
+    @IBAction func timeStepperValueChanged(_ sender: UIStepper) {
         timeValue.text = Int(sender.value).description
     }
     
-    @IBAction func skippingValueChanged(sender: UISwitch) {
+    @IBAction func skippingValueChanged(_ sender: UISwitch) {
         allowSkipping = !allowSkipping
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "Submit" {
             print("submit", terminator: "")
-            Game.data.settings = Settings(t: Int(teamValue.text!)!, l: Int(timeValue.text!)!, s: allowSkipping)
+            gameStateMachine.updateSettings(numTeams: teamValue.text, timeLimit: timeValue.text, allowSkipping: allowSkipping)
         }
     }
     
     
-    @IBAction func didSubmit(sender: AnyObject) {
+    @IBAction func didSubmit(_ sender: AnyObject) {
         print("submit", terminator: "")
-        Game.data.settings = Settings(t: Int(teamValue.text!)!, l: Int(timeValue.text!)!, s: allowSkipping)
+        gameStateMachine.updateSettings(numTeams: teamValue.text, timeLimit: timeValue.text, allowSkipping: allowSkipping)
     }
     
-    override func viewWillAppear(animated: Bool) {
-        self.navigationController?.navigationBar.translucent = true
+    override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.navigationBar.isTranslucent = true
     }
     
     
@@ -57,15 +57,7 @@ class SetupViewController: UIViewController {
         
         timeStepper.wraps = true
         timeStepper.autorepeat = true
-        
-
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
 
     /*
     // MARK: - Navigation
