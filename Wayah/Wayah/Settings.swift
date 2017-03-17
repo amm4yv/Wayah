@@ -8,15 +8,9 @@
 
 import Foundation
 
-class Settings: NSObject {
-    let numTeams: Int!
-    let timeLimit: Int!
-    let allowSkipping: Bool!
-    
-    init(numTeams: Int = 2, timeLimit: Int = 60, allowSkipping: Bool = true) {
-        self.numTeams = numTeams
-        self.timeLimit = timeLimit
-        self.allowSkipping = allowSkipping
-    }
-    
-}
+//struct Settings {
+//    let allowSkipping: Bool
+//    let numEntries: Int
+//    let numTeams: Int
+//    let timeLimit: Int
+//}

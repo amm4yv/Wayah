@@ -10,6 +10,13 @@ import CoreData
 import Foundation
 import UIKit
 
+struct Settings {
+    var allowSkipping: Bool
+    var numEntries: Int
+    var numTeams: Int
+    var timeLimit: Int
+}
+
 struct Round {
     var id: Int
     var title: String
@@ -24,73 +31,70 @@ fileprivate let Rounds: [Round] = [
 
 class GameStateMachine: NSObject {
     
-    static let sharedInstance : GameStateMachine = {
-        let instance = GameStateMachine()
-        return instance
-    }()
+    static var sharedInstance : GameStateMachine = GameStateMachine()
     
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-    
-    fileprivate(set) var settings = Settings()
-    fileprivate(set) var currentRoundIndex: Int? = nil
-    var currentRound: Round? {
-        guard let index = currentRoundIndex else { return nil }
-        return Rounds[index]
+    fileprivate(set) var settings: Settings
+    fileprivate(set) var currentRoundIndex: Int = 0
+    var currentRound: Round {
+        return Rounds[currentRoundIndex]
     }
+    fileprivate(set) var currentRoundStateMachine: RoundStateMachine? = nil
     
-    var scores = Scoreboard()
     var teams: [Team] = []
     
     fileprivate(set) var gameIsOver: Bool = false
     
     override init() {
+        self.settings = Settings(allowSkipping: true, numEntries: 0, numTeams: 2, timeLimit: 60)
+        
         super.init()
-        newGame()
     }
     
-    // MARK: Access team
-    
-    func getFirstTeam() -> Team {
-        return teams.first!
-    }
-    
-    func getNextTeam(currentTeam: Team) -> Team {
-        if let currentIndex = teams.index(of: currentTeam),
-            teams.index(after: currentIndex) < teams.endIndex {
-            
-            return teams[teams.index(after: currentIndex)]
-        }
-        return teams.first!
-    }
+    // MARK: Public Methods
     
     func newGame() {
         currentRoundIndex = 0
-        settings = Settings()
-        scores = Scoreboard()
+        settings = defaultSettings
         for id in 1...settings.numTeams {
             teams.append(Team(id: id))
         }
+        currentRoundStateMachine = RoundStateMachine(teams: teams)
     }
     
-    func updateSettings(numTeams: String?, timeLimit: String?, allowSkipping: Bool) {
-        guard let numTeams = numTeams, let timeLimit = timeLimit else { return }
-        guard let numTeamsInt = Int(numTeams), let timeLimitInt = Int(timeLimit) else { return }
+    func updateSettings(numEntries: Int? = nil, numTeams: Int? = nil, timeLimit: Int? = nil, allowSkipping: Bool? = nil) {
+        if let numEntries = numEntries {
+            settings.numEntries = numEntries
+        }
         
-        settings = Settings(numTeams: numTeamsInt, timeLimit: timeLimitInt, allowSkipping: allowSkipping)
+        if let numTeams = numTeams {
+            settings.numEntries = numTeams
+        }
+        
+        if let timeLimit = timeLimit {
+            settings.timeLimit = timeLimit
+        }
+        
+        if let allowSkipping = allowSkipping {
+            settings.allowSkipping = allowSkipping
+        }
     }
     
-    func roundOver() {
-        currentRoundIndex = currentRoundIndex != nil ? currentRoundIndex! + 1 : nil
+    func startNewRound() {
+        currentRoundStateMachine = RoundStateMachine(teams: teams)
+        currentRoundIndex += 1
         
-        if let roundIndex = currentRoundIndex, roundIndex >= Rounds.count {
+        if currentRoundIndex >= Rounds.count {
             gameIsOver = true
-            currentRoundIndex = nil
+            currentRoundIndex = 0
         }
     }
     
     var winner: Team? {
         return teams.max()
+    }
+    
+    var defaultSettings: Settings {
+        return Settings(allowSkipping: true, numEntries: 0, numTeams: 2, timeLimit: 60)
     }
     
 }

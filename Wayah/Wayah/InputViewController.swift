@@ -11,59 +11,17 @@ import UIKit
 
 class InputViewController: UIViewController, UITextFieldDelegate, NSFetchedResultsControllerDelegate {
 
-    @IBOutlet var scrollView: UIScrollView!
     @IBOutlet weak var textInput: UITextField!
     @IBOutlet weak var totalItems: UILabel!
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet var viewBottomSpacing: NSLayoutConstraint!
     
-    @IBAction func addItemWithSender(sender: AnyObject) {
+    @IBAction func addItemWithSender(_ sender: AnyObject) {
         DataService.addEntryWithName(textInput.text)
         textInput.text = nil
     }
     
-    //MARK: - Helper Methods
-    
-    func resign() {
-        self.resignFirstResponder()
-    }
-
-    func endEditingNow(){
-        self.view.endEditing(true)
-    }
-    
-    //MARK: - Delegate Methods
-    
-    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-        // Create a button bar for the number pad
-        let keyboardDoneButtonView = UIToolbar()
-        keyboardDoneButtonView.sizeToFit()
-        
-        // Setup the buttons to be put in the system.
-        let item = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.plain, target: self, action: #selector(InputViewController.endEditingNow))
-        let toolbarButtons = [item]
-        
-        //Put the buttons into the ToolBar and display the tool bar
-        keyboardDoneButtonView.setItems(toolbarButtons, animated: false)
-        textField.inputAccessoryView = keyboardDoneButtonView
-        
-        return true
-    }
-    
-    private func textFieldDidEndEditing(textField: UITextField) {
-        resign()
-    }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        self.view.endEditing(true)
-    }
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        resign()
-        return true
-    }
-    
-    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        totalItems.text = String(controller.fetchedObjects?.count ?? 0)
-    }
+    //MARK: - UIViewController
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -73,9 +31,11 @@ class InputViewController: UIViewController, UITextFieldDelegate, NSFetchedResul
     override func viewDidLoad() {
         super.viewDidLoad()
         textInput.delegate = self
-
-        NotificationCenter.default.addObserver(self, selector: #selector(InputViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(InputViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        if let titleText = titleLabel.attributedText?.string {
+            titleLabel.attributedText = UIUtil.textWithStroke(text: titleText, color: Theme.Colors.dark)
+        }
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardNotification(_:)), name: NSNotification.Name.UIKeyboardWillChangeFrame, object: nil)
         
         do {
             try self.fetchedResultsController.performFetch()
@@ -86,31 +46,62 @@ class InputViewController: UIViewController, UITextFieldDelegate, NSFetchedResul
         }
     }
     
-    func registerForKeyboardNotifications() {
-        //Adding notifies on keyboard appearing
-//        NotificationCenter.default.addObserver(self, selector: #selector(InputViewController.keyboardWasShown(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-//        NotificationCenter.default.addObserver(self, selector: #selector(InputViewController.keyboardWillBeHidden(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
+    //MARK: - UITextFieldDelegate
     
-    func deregisterFromKeyboardNotifications() {
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
     }
     
-    func keyboardWillShow(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-            if self.view.frame.origin.y == 0 {
-                self.view.frame.origin.y -= keyboardSize.height
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        addItemWithSender(textField)
+        return false
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        self.resignFirstResponder()
+    }
+    
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        totalItems.text = String(controller.fetchedObjects?.count ?? 0)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        GameStateMachine.sharedInstance.updateSettings(numEntries: fetchedResultsController.fetchedObjects?.count)
+    }
+    
+    //MARK: - Helper Methods
+    
+    func endEditingNow(){
+        self.view.endEditing(true)
+    }
+    
+    func keyboardNotification(_ notification: NSNotification) {
+        if let userInfo = notification.userInfo {
+            let endFrame = (userInfo[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
+            let duration:TimeInterval = (userInfo[UIKeyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0
+            let animationCurveRawNSN = userInfo[UIKeyboardAnimationCurveUserInfoKey] as? NSNumber
+            let animationCurveRaw = animationCurveRawNSN?.uintValue ?? UIViewAnimationOptions.curveEaseInOut.rawValue
+            let animationCurve:UIViewAnimationOptions = UIViewAnimationOptions(rawValue: animationCurveRaw)
+            
+            let animations = {
+                if let endFrame = endFrame, endFrame.origin.y >= UIScreen.main.bounds.size.height {
+                    self.view.frame.origin.y = 0.0
+                } else if let endFrame = endFrame, endFrame.size.height > 0 {
+                    self.view.frame.origin.y -= endFrame.size.height
+                } else {
+                    self.view.frame.origin.y = 0.0
+                }
             }
-        }
-    }
-    
-    func keyboardWillHide(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-            if self.view.frame.origin.y != 0{
-                self.view.frame.origin.y += keyboardSize.height
-            }
+            
+            UIView.animate(withDuration: duration,
+                           delay: TimeInterval(0),
+                           options: animationCurve,
+                           animations: animations,
+                           completion: nil)
         }
     }
 

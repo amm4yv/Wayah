@@ -13,12 +13,9 @@
 		C20B36281AEB357F00568220 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C20B36271AEB357F00568220 /* Images.xcassets */; };
 		C20B362B1AEB357F00568220 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = C20B36291AEB357F00568220 /* LaunchScreen.xib */; };
 		C20B36371AEB357F00568220 /* WayahTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20B36361AEB357F00568220 /* WayahTests.swift */; };
-		C20B36411AEB3E8F00568220 /* SetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20B36401AEB3E8F00568220 /* SetupViewController.swift */; };
 		C20B36431AEB4E6A00568220 /* InputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20B36421AEB4E6A00568220 /* InputViewController.swift */; };
-		C20B36451AEB4F4800568220 /* Scoreboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20B36441AEB4F4800568220 /* Scoreboard.swift */; };
 		C24587631AF8485300642A34 /* ConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24587621AF8485300642A34 /* ConfirmationViewController.swift */; };
 		C24587661AF8485F00642A34 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24587641AF8485F00642A34 /* GameViewController.swift */; };
-		C24587671AF8485F00642A34 /* GameViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C24587651AF8485F00642A34 /* GameViewController.xib */; };
 		C24587691AF896D200642A34 /* InfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24587681AF896D100642A34 /* InfoViewController.swift */; };
 		C24921C41B9665C2000C6E8C /* EditNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24921C31B9665C2000C6E8C /* EditNameViewController.swift */; };
 		C24921C61B966A34000C6E8C /* EditNameViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24921C51B966A34000C6E8C /* EditNameViewCell.swift */; };
@@ -31,15 +28,16 @@
 		D72D01B21E71F766008657B2 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72D01B11E71F766008657B2 /* Settings.swift */; };
 		D72D01B41E71F78F008657B2 /* Team.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72D01B31E71F78F008657B2 /* Team.swift */; };
 		D72D01BC1E72F312008657B2 /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72D01BB1E72F312008657B2 /* DataService.swift */; };
-		D72D01BE1E72FE43008657B2 /* InputViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D72D01BD1E72FE43008657B2 /* InputViewController.xib */; };
-		D72D01C01E72FE95008657B2 /* EditNameViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D72D01BF1E72FE95008657B2 /* EditNameViewController.xib */; };
-		D72D01C51E72FF02008657B2 /* HomeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D72D01C41E72FF02008657B2 /* HomeViewController.xib */; };
 		D7319B0A1DA35076003C30ED /* Capsule.otf in Resources */ = {isa = PBXBuildFile; fileRef = D7319B091DA35057003C30ED /* Capsule.otf */; };
 		D7319B0C1DA3531E003C30ED /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7319B0B1DA3531E003C30ED /* Theme.swift */; };
+		D782F53A1E745CE6002F2A49 /* RoundReviewCollectionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D782F5391E745CE6002F2A49 /* RoundReviewCollectionCell.xib */; };
+		D782F53C1E74710A002F2A49 /* TurnStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D782F53B1E74710A002F2A49 /* TurnStateMachine.swift */; };
+		D782F54A1E76E28D002F2A49 /* UIUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = D782F5491E76E28D002F2A49 /* UIUtil.swift */; };
 		D79E0F341DAA9E1700BC0A69 /* Wayah.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D79E0F321DAA9E1700BC0A69 /* Wayah.xcdatamodeld */; };
+		D7E008C71E731FBC002C0C39 /* TurnReviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E008C61E731FBC002C0C39 /* TurnReviewViewController.swift */; };
 		D7E3E8261D75233F0044160B /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D7E3E8251D75233F0044160B /* Default-568h@2x.png */; };
 		D7E3E82A1D7523EC0044160B /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D7E3E8281D7523EC0044160B /* Info.plist */; };
-		D7E53F631D7D2FD200F0A675 /* RoundReviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E53F621D7D2FD200F0A675 /* RoundReviewViewController.swift */; };
+		D7E53F631D7D2FD200F0A675 /* TurnReviewDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E53F621D7D2FD200F0A675 /* TurnReviewDetailViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,12 +64,9 @@
 		C20B36301AEB357F00568220 /* WayahTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WayahTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C20B36351AEB357F00568220 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C20B36361AEB357F00568220 /* WayahTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WayahTests.swift; sourceTree = "<group>"; };
-		C20B36401AEB3E8F00568220 /* SetupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetupViewController.swift; sourceTree = "<group>"; };
 		C20B36421AEB4E6A00568220 /* InputViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputViewController.swift; sourceTree = "<group>"; };
-		C20B36441AEB4F4800568220 /* Scoreboard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Scoreboard.swift; sourceTree = "<group>"; };
 		C24587621AF8485300642A34 /* ConfirmationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfirmationViewController.swift; sourceTree = "<group>"; };
 		C24587641AF8485F00642A34 /* GameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
-		C24587651AF8485F00642A34 /* GameViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = GameViewController.xib; path = Wayah/GameViewController.xib; sourceTree = "<group>"; };
 		C24587681AF896D100642A34 /* InfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfoViewController.swift; sourceTree = "<group>"; };
 		C24921C31B9665C2000C6E8C /* EditNameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditNameViewController.swift; sourceTree = "<group>"; };
 		C24921C51B966A34000C6E8C /* EditNameViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditNameViewCell.swift; sourceTree = "<group>"; };
@@ -84,15 +79,16 @@
 		D72D01B11E71F766008657B2 /* Settings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		D72D01B31E71F78F008657B2 /* Team.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Team.swift; sourceTree = "<group>"; };
 		D72D01BB1E72F312008657B2 /* DataService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
-		D72D01BD1E72FE43008657B2 /* InputViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = InputViewController.xib; path = ../InputViewController.xib; sourceTree = "<group>"; };
-		D72D01BF1E72FE95008657B2 /* EditNameViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = EditNameViewController.xib; path = ../EditNameViewController.xib; sourceTree = "<group>"; };
-		D72D01C41E72FF02008657B2 /* HomeViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HomeViewController.xib; sourceTree = "<group>"; };
 		D7319B091DA35057003C30ED /* Capsule.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Capsule.otf; path = Wayah/Resources/Capsule.otf; sourceTree = "<group>"; };
 		D7319B0B1DA3531E003C30ED /* Theme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		D782F5391E745CE6002F2A49 /* RoundReviewCollectionCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RoundReviewCollectionCell.xib; sourceTree = "<group>"; };
+		D782F53B1E74710A002F2A49 /* TurnStateMachine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TurnStateMachine.swift; sourceTree = "<group>"; };
+		D782F5491E76E28D002F2A49 /* UIUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIUtil.swift; sourceTree = "<group>"; };
 		D79E0F331DAA9E1700BC0A69 /* Wayah.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Wayah.xcdatamodel; sourceTree = "<group>"; };
+		D7E008C61E731FBC002C0C39 /* TurnReviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TurnReviewViewController.swift; sourceTree = "<group>"; };
 		D7E3E8251D75233F0044160B /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		D7E3E8281D7523EC0044160B /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Wayah/Info.plist; sourceTree = "<group>"; };
-		D7E53F621D7D2FD200F0A675 /* RoundReviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundReviewViewController.swift; sourceTree = "<group>"; };
+		D7E53F621D7D2FD200F0A675 /* TurnReviewDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TurnReviewDetailViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -196,7 +192,6 @@
 				D72D01AD1E71F5D0008657B2 /* Subcategory.swift */,
 				D72D01AF1E71F5E3008657B2 /* Entry.swift */,
 				D72D01B31E71F78F008657B2 /* Team.swift */,
-				C20B36441AEB4F4800568220 /* Scoreboard.swift */,
 				D72D01B11E71F766008657B2 /* Settings.swift */,
 				D72D01BB1E72F312008657B2 /* DataService.swift */,
 			);
@@ -207,11 +202,8 @@
 			isa = PBXGroup;
 			children = (
 				C20B36421AEB4E6A00568220 /* InputViewController.swift */,
-				D72D01BD1E72FE43008657B2 /* InputViewController.xib */,
 				C24921C31B9665C2000C6E8C /* EditNameViewController.swift */,
-				D72D01BF1E72FE95008657B2 /* EditNameViewController.xib */,
 				C24921C51B966A34000C6E8C /* EditNameViewCell.swift */,
-				C20B36401AEB3E8F00568220 /* SetupViewController.swift */,
 				C24587621AF8485300642A34 /* ConfirmationViewController.swift */,
 			);
 			name = "Game Setup";
@@ -223,7 +215,6 @@
 				C20B36201AEB357F00568220 /* AppDelegate.swift */,
 				D7319B0B1DA3531E003C30ED /* Theme.swift */,
 				C20B36221AEB357F00568220 /* HomeViewController.swift */,
-				D72D01C41E72FF02008657B2 /* HomeViewController.xib */,
 			);
 			name = "Home Screen / App Setup";
 			sourceTree = "<group>";
@@ -233,10 +224,12 @@
 			children = (
 				C24587681AF896D100642A34 /* InfoViewController.swift */,
 				C24587641AF8485F00642A34 /* GameViewController.swift */,
-				D7E53F621D7D2FD200F0A675 /* RoundReviewViewController.swift */,
+				D7E008C61E731FBC002C0C39 /* TurnReviewViewController.swift */,
+				D7E53F621D7D2FD200F0A675 /* TurnReviewDetailViewController.swift */,
 				C24921C71B969513000C6E8C /* GameOverViewController.swift */,
 				D72D01A61E71E9BF008657B2 /* GameStateMachine.swift */,
 				D72D01A81E71E9D0008657B2 /* RoundStateMachine.swift */,
+				D782F53B1E74710A002F2A49 /* TurnStateMachine.swift */,
 			);
 			name = "Game Play";
 			sourceTree = "<group>";
@@ -246,11 +239,12 @@
 			children = (
 				D7319B091DA35057003C30ED /* Capsule.otf */,
 				C20B36241AEB357F00568220 /* Main.storyboard */,
-				C24587651AF8485F00642A34 /* GameViewController.xib */,
+				D782F5391E745CE6002F2A49 /* RoundReviewCollectionCell.xib */,
 				C20B36291AEB357F00568220 /* LaunchScreen.xib */,
 				D7E3E8251D75233F0044160B /* Default-568h@2x.png */,
 				D7E3E8281D7523EC0044160B /* Info.plist */,
 				C20B36271AEB357F00568220 /* Images.xcassets */,
+				D782F5491E76E28D002F2A49 /* UIUtil.swift */,
 			);
 			name = Resources;
 			path = ..;
@@ -344,15 +338,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				D7319B0A1DA35076003C30ED /* Capsule.otf in Resources */,
-				C24587671AF8485F00642A34 /* GameViewController.xib in Resources */,
 				D7E3E82A1D7523EC0044160B /* Info.plist in Resources */,
 				C20B36261AEB357F00568220 /* Main.storyboard in Resources */,
 				C20B362B1AEB357F00568220 /* LaunchScreen.xib in Resources */,
-				D72D01C01E72FE95008657B2 /* EditNameViewController.xib in Resources */,
 				D7E3E8261D75233F0044160B /* Default-568h@2x.png in Resources */,
-				D72D01C51E72FF02008657B2 /* HomeViewController.xib in Resources */,
 				C20B36281AEB357F00568220 /* Images.xcassets in Resources */,
-				D72D01BE1E72FE43008657B2 /* InputViewController.xib in Resources */,
+				D782F53A1E745CE6002F2A49 /* RoundReviewCollectionCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -404,6 +395,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D72D01B01E71F5E3008657B2 /* Entry.swift in Sources */,
+				D782F54A1E76E28D002F2A49 /* UIUtil.swift in Sources */,
 				C24921C41B9665C2000C6E8C /* EditNameViewController.swift in Sources */,
 				D72D01A71E71E9BF008657B2 /* GameStateMachine.swift in Sources */,
 				C24587661AF8485F00642A34 /* GameViewController.swift in Sources */,
@@ -411,15 +403,15 @@
 				D72D01BC1E72F312008657B2 /* DataService.swift in Sources */,
 				D79E0F341DAA9E1700BC0A69 /* Wayah.xcdatamodeld in Sources */,
 				D72D01AB1E71F5AA008657B2 /* Category.swift in Sources */,
-				D7E53F631D7D2FD200F0A675 /* RoundReviewViewController.swift in Sources */,
+				D7E53F631D7D2FD200F0A675 /* TurnReviewDetailViewController.swift in Sources */,
+				D7E008C71E731FBC002C0C39 /* TurnReviewViewController.swift in Sources */,
 				D72D01B41E71F78F008657B2 /* Team.swift in Sources */,
 				C20B36231AEB357F00568220 /* HomeViewController.swift in Sources */,
 				D72D01AE1E71F5D0008657B2 /* Subcategory.swift in Sources */,
-				C20B36451AEB4F4800568220 /* Scoreboard.swift in Sources */,
 				C24921C61B966A34000C6E8C /* EditNameViewCell.swift in Sources */,
-				C20B36411AEB3E8F00568220 /* SetupViewController.swift in Sources */,
 				D7319B0C1DA3531E003C30ED /* Theme.swift in Sources */,
 				C24921C81B969514000C6E8C /* GameOverViewController.swift in Sources */,
+				D782F53C1E74710A002F2A49 /* TurnStateMachine.swift in Sources */,
 				C20B36211AEB357F00568220 /* AppDelegate.swift in Sources */,
 				C24587691AF896D200642A34 /* InfoViewController.swift in Sources */,
 				D72D01B21E71F766008657B2 /* Settings.swift in Sources */,
@@ -559,6 +551,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 7WS595J322;
 				INFOPLIST_FILE = Wayah/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -576,6 +569,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 7WS595J322;
 				INFOPLIST_FILE = Wayah/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

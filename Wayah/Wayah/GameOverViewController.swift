@@ -27,10 +27,6 @@ class GameOverViewController: UIViewController {
         }
             
         infoLabel.text = info
-        gameStateMachine.newGame()
     }
     
-    @IBAction func goHomeButtonPressed(_ sender: AnyObject) {
-        self.performSegue(withIdentifier: "unwindToHomeViewController", sender: self)
-    }
 }

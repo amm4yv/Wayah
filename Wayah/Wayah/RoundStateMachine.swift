@@ -10,79 +10,52 @@ import CoreData
 import Foundation
 import UIKit
 
+
+extension Notification.Name {
+    static let entriesUpdated = Notification.Name("entries-updated")
+}
+
+
 class RoundStateMachine: NSObject, NSFetchedResultsControllerDelegate {
     
-    fileprivate(set) var bowl1: [Entry] = []
-    fileprivate(set) var bowl2: [Entry] = []
-    
-    fileprivate(set) var entryIndex: Int = 0
-    fileprivate(set) var currentTeam: Team
-    fileprivate(set) var numCorrect: Int = 0
-
+    fileprivate(set) var currentTeam: Team? = nil
     fileprivate(set) var roundIsOver: Bool = false
+    fileprivate(set) var turnStateMachine: TurnStateMachine? = nil
+    fileprivate(set) var unguessedEntries: [Entry]
     
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-    fileprivate let gameStateMachine = GameStateMachine.sharedInstance
+    fileprivate let teams: [Team]
     
-    var currentEntry: Entry {
-        return bowl1[entryIndex]
-    }
-    
-    override init() {
-        self.currentTeam = gameStateMachine.getFirstTeam()
-        super.init()
-    }
-    
-    func startNewRound() {
-        guard let objects = fetchedResultsController.fetchedObjects else { return }
-        bowl1 = objects
-        bowl2 = []
-        entryIndex = Int(arc4random_uniform(UInt32(bowl1.count)))
-    }
-    
-    func entryGuessedCorrectly() {
-        numCorrect += 1
-        currentTeam.selectedCorrectItem()
-        bowl2.append(bowl1.remove(at: entryIndex))
+    init(teams: [Team]) {
+        self.teams = teams
+        unguessedEntries = DataService.allEntries
         
-        if bowl1.isEmpty {
-            endRound()
-            
+        super.init()
+        currentTeam = nextTeam(currentTeam: currentTeam)
+        turnStateMachine = TurnStateMachine(team: currentTeam!, entries: unguessedEntries)
+    }
+    
+    func startNewTurn() {
+        // Update from the last turn, if necessary
+        if let turnStateMachine = turnStateMachine {
+            currentTeam?.addToScore(turnStateMachine.numCorrect)
+            currentTeam?.addToSkipped(turnStateMachine.numSkipped)
+            unguessedEntries = unguessedEntries.filter{ !turnStateMachine.correctEntries.contains($0) }
+        }
+        
+        if unguessedEntries.isEmpty {
+            roundIsOver = true
         } else {
-            entryIndex = Int(arc4random_uniform(UInt32(bowl1.count)))
+            currentTeam = nextTeam(currentTeam: currentTeam)
+            turnStateMachine = TurnStateMachine(team: currentTeam!, entries: unguessedEntries)
         }
     }
-    
-    func entrySkipped() {
-        entryIndex = Int(arc4random_uniform(UInt32(bowl1.count)))
+
+    fileprivate func nextTeam(currentTeam: Team?) -> Team {
+        if let currentTeam = currentTeam, let currentIndex = teams.index(of: currentTeam),
+            teams.index(after: currentIndex) < teams.endIndex {
+            
+            return teams[teams.index(after: currentIndex)]
+        }
+        return teams.first!
     }
-    
-    func endTurn() {
-        numCorrect = 0
-        currentTeam = gameStateMachine.getNextTeam(currentTeam: currentTeam)
-    }
-    
-    func endRound() {
-        bowl1 = []
-        bowl2 = []
-        entryIndex = 0
-        numCorrect = 0
-        roundIsOver = true
-    }
-    
-    fileprivate lazy var fetchedResultsController: NSFetchedResultsController<Entry> = {
-        // Create Fetch Request
-        let fetchRequest: NSFetchRequest<Entry> = Entry.fetchRequest() as! NSFetchRequest<Entry>
-        
-        // Configure Fetch Request
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
-        
-        // Create Fetched Results Controller
-        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.context, sectionNameKeyPath: nil, cacheName: nil)
-        
-        // Configure Fetched Results Controller
-        fetchedResultsController.delegate = self
-        
-        return fetchedResultsController
-    }()
 }

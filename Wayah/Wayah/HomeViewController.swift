@@ -14,27 +14,29 @@ class HomeViewController: UIViewController {
     @IBOutlet weak var startGame: UIButton!
     @IBOutlet weak var howToPlay: UIButton!
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        self.navigationController?.isNavigationBarHidden = true
-        
-        startGame.addTarget(self, action: #selector(HomeViewController.startNewGame(_:)), for: .touchUpInside)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        self.navigationController?.isNavigationBarHidden = false
-    }
-
-    @IBAction func prepareForUnwind(segue: UIStoryboardSegue){
-        
+    override var prefersStatusBarHidden: Bool {
+        return true
     }
     
-    func startNewGame(_ sender: Any) {
-        DataService.deleteAllEntities()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: false)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "startNewGame" {
+            DataService.deleteAllEntries()
+            GameStateMachine.sharedInstance = GameStateMachine()
+        }
+    }
+    
+    @IBAction func unwindToHomeViewController(segue: UIStoryboardSegue) {
         
-        let inputViewController = InputViewController(nibName: nil, bundle: nil)
-        navigationController?.pushViewController(inputViewController, animated: true)
     }
     
 }

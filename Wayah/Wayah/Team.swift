@@ -17,12 +17,20 @@ class Team: NSObject, Comparable {
         self.id = id
     }
     
-    func selectedCorrectItem() {
-        score += 1
+//    func selectedCorrectItem() {
+//        score += 1
+//    }
+//    
+//    func skippedItem() {
+//        numSkips += 1
+//    }
+//    
+    func addToScore(_ number: Int) {
+        score += number
     }
     
-    func skippedItem() {
-        numSkips += 1
+    func addToSkipped(_ number: Int) {
+        numSkips += number
     }
     
     static func <(lhs: Team, rhs: Team) -> Bool {

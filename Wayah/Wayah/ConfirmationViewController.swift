@@ -34,37 +34,13 @@ class ConfirmationViewController: UIViewController, NSFetchedResultsControllerDe
         super.viewDidLoad()
         
         timeLimit.text = String(gameStateMachine.settings.timeLimit)
-        namesInBowl.text = String(fetchedResultsController.fetchedObjects?.count ?? 0)
-        
-        gameStateMachine.scores.create(numberOfTeams: gameStateMachine.settings.numTeams)
+        namesInBowl.text = String(gameStateMachine.settings.numEntries)
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
-    
     // MARK: - Navigation
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        gameStateMachine.updateSettings(numTeams: "2", timeLimit: String(timeStepper.value), allowSkipping: allowSkipping)
-
+        gameStateMachine.newGame()
+        gameStateMachine.updateSettings(numTeams: 2, timeLimit: Int(timeStepper.value), allowSkipping: allowSkipping)
     }
-    
-    fileprivate lazy var fetchedResultsController: NSFetchedResultsController<Entry> = {
-        // Create Fetch Request
-        let fetchRequest: NSFetchRequest<Entry> = Entry.fetchRequest() as! NSFetchRequest<Entry>
-        
-        // Configure Fetch Request
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
-        
-        // Create Fetched Results Controller
-        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.context, sectionNameKeyPath: nil, cacheName: nil)
-        
-        // Configure Fetched Results Controller
-        fetchedResultsController.delegate = self
-        
-        return fetchedResultsController
-    }()
 }

@@ -17,6 +17,7 @@ struct Theme {
         static let lightBlue = UIColor(red: 177, green: 192, blue: 201, alpha: 1.0)
         static let green = UIColor(red: 136, green: 178, blue: 126, alpha: 1.0)
         static let neutral = UIColor(red: 182, green: 182, blue: 171, alpha: 1.0)
+//        static let purple = UIColor(
     }
     
     
